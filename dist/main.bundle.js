@@ -1,1 +1,1 @@
-function o(){console.log("script1 loaded")}function c(){console.log("script2 loaded")}function l(){console.log("script3 loaded")}o();c();l();console.log("main.js loaded");
+function o(){console.log("script1 loaded"),console.log("script1 Hello World")}function l(){console.log("script2 loaded")}function c(){console.log("script3 loaded")}function s(){console.log("script4 loaded")}o();l();c();s();console.log("main.js loaded");
