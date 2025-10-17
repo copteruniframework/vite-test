@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/copteruniframework/vite-test/issues"
   },
-  "homepage": "https://github.com/copteruniframework/vite-test#readme"
+  "homepage": "https://github.com/copteruniframework/vite-test#readme",
+  "devDependencies": {
+    "vite": "^7.1.10"
+  }
 }
