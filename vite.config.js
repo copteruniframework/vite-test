@@ -7,7 +7,8 @@ export default defineConfig({
     rollupOptions: {
       input: './assets/JavaScript/main.js',
       output: {
-        entryFileNames: 'main.bundle.js',
+        entryFileNames: 'main.built.js',
+        assetFileNames: 'main.built.[ext]',
       },
       inlineDynamicImports: true,
       manualChunks: undefined,
