@@ -1,14 +1,19 @@
 // countdown.ts
 export function countdown() {
+  // Hilfsfunktion, um data-* Attribute auszulesen
+  function getData(el: HTMLElement, name: string) {
+    return el.getAttribute(`data-${name}`) ?? el.dataset[name] ?? null;
+  }
+
   // Alle Elemente mit data-countdown selektieren
   const nodes = document.querySelectorAll<HTMLElement>('[data-countdown]');
 
   // Schleife über alle Elemente und data-mode, data-duration, data-format ausgeben
   nodes.forEach((el, idx) => {
-    const id = el.getAttribute('data-id') ?? (el.dataset as any).id ?? 'unknown';
-    const mode = el.getAttribute('data-mode') ?? (el.dataset as any).mode ?? null;
-    const duration = el.getAttribute('data-duration') ?? (el.dataset as any).duration ?? null;
-    const format = el.getAttribute('data-format') ?? (el.dataset as any).format ?? null;
+    const id = getData(el, 'id') ?? 'unknown';
+    const mode = getData(el, 'mode');
+    const duration = getData(el, 'duration');
+    const format = getData(el, 'format');
     console.log(`countdown[${idx}] id=${id} mode=${mode} duration=${duration} format=${format}`);
   });
 }
