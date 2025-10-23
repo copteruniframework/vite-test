@@ -5,7 +5,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     rollupOptions: {
-      input: './assets/JavaScript/main.js',
+      input: './assets/JavaScript/main.ts',
       output: {
         entryFileNames: 'main.built.js',
         assetFileNames: 'main.built.[ext]',

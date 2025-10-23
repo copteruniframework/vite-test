@@ -1,3 +1,3 @@
 export function script3() {
-    console.log('script3 loaded')
+    // console.log('script3 loaded')
 }

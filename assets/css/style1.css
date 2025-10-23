@@ -1,3 +1,15 @@
 .style1 {
     background-color: green;
 }
+
+.dev_container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.countdown {
+    font-size: 3rem;
+}
