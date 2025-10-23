@@ -12,8 +12,15 @@ export function countdown() {
   nodes.forEach((el, idx) => {
     const id = getData(el, 'id') ?? 'unknown';
     const mode = getData(el, 'mode');
-    const duration = getData(el, 'duration');
-    const format = getData(el, 'format');
-    console.log(`countdown[${idx}] id=${id} mode=${mode} duration=${duration} format=${format}`);
+
+    if (mode === 'visit') {
+      const duration = getData(el, 'duration');
+      console.log(`countdown[${idx}] id=${id} mode=visit duration=${duration}`);
+    } else if (mode === 'deadline') {
+      const endAt = getData(el, 'end-at');
+      console.log(`countdown[${idx}] id=${id} mode=deadline endAt=${endAt}`);
+    } else {
+      console.warn(`countdown[${idx}] id=${id} unbekannter mode=${mode}`);
+    }
   });
 }
