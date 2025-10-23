@@ -14,8 +14,45 @@ export function countdown() {
     const mode = getData(el, 'mode');
 
     if (mode === 'visit') {
-      const duration = getData(el, 'duration');
-      console.log(`countdown[${idx}] id=${id} mode=visit duration=${duration}`);
+      const durationStr = getData(el, 'duration');
+      if (!durationStr) return;
+
+      const minutes = parseInt(durationStr.replace(/[^0-9]/g, ''), 10);
+      const durationMs = minutes * 60 * 1000;
+      const storageKey = `countdown::${id}::endAt`;
+      let endAt = parseInt(localStorage.getItem(storageKey) || '0', 10);
+      if (!endAt || isNaN(endAt) || endAt < Date.now()) {
+        endAt = Date.now() + durationMs;
+        localStorage.setItem(storageKey, String(endAt));
+      }
+
+      let timeout: number | undefined;
+
+      function render(now: number) {
+        const remaining = endAt - now;
+        if (remaining <= 0) {
+          if (timeout) clearTimeout(timeout);
+          el.textContent = 'abgelaufen';
+          localStorage.removeItem(storageKey);
+          return;
+        }
+        const seconds = Math.ceil(remaining / 1000);
+        el.textContent = `${seconds}s`;
+
+        const nextDelay = remaining - (seconds - 1) * 1000;
+        const delay = Math.max(50, Math.min(1000, nextDelay));
+        timeout = window.setTimeout(() => render(Date.now()), delay);
+      }
+
+      render(Date.now());
+
+      const onVis = () => {
+        if (!document.hidden) {
+          if (timeout) clearTimeout(timeout);
+          render(Date.now());
+        }
+      };
+      document.addEventListener('visibilitychange', onVis);
     } else if (mode === 'deadline') {
       const endAt = getData(el, 'end-at');
       console.log(`countdown[${idx}] id=${id} mode=deadline endAt=${endAt}`);
