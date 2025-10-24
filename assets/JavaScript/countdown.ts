@@ -1,3 +1,11 @@
+/**
+ * Parst einen ISO‑8601-Dauerstring (z. B. "PT2H30M" oder "P1DT10M") in Millisekunden.
+ * Unterstützt Tage, Stunden, Minuten und Sekunden.
+ *
+ * @param {string} iso - ISO‑8601-Dauerstring, beginnend mit 'P'.
+ * @returns {number} Dauer in Millisekunden.
+ * @throws {Error} Wenn der String ungültig oder nicht unterstützt ist.
+ */
 export function parseISODuration(iso: string): number {
     if (typeof iso !== 'string' || !iso.startsWith('P')) {
         throw new Error('Invalid ISO-8601 duration');
@@ -17,8 +25,21 @@ export function parseISODuration(iso: string): number {
     return ((((days * 24 + hours) * 60 + minutes) * 60) + seconds) * 1000;
 }
 
+/**
+ * Fügt führende Nullen zu einstelligen Zahlen hinzu.
+ *
+ * @param {number} n - Zahl, die formatiert werden soll.
+ * @returns {string} Zweistellige Zeichenkette (z. B. "09").
+ */
 function pad2(n: number): string { return String(n).padStart(2, '0'); }
 
+/**
+ * Zerlegt eine Millisekundendauer in Tage, Stunden, Minuten und Sekunden.
+ *
+ * @param {number} ms - Dauer in Millisekunden.
+ * @returns {{days: number, hours: number, minutes: number, seconds: number, totalHours: number}}
+ *   Objekt mit den aufgeschlüsselten Zeitanteilen.
+ */
 function breakdown(ms: number) {
     const totalSeconds = Math.max(0, Math.floor(ms / 1000));
     const seconds = totalSeconds % 60;
@@ -30,7 +51,13 @@ function breakdown(ms: number) {
     return { days, hours, minutes, seconds, totalHours };
 }
 
-// Schritt 1: Einfaches Format "hms" und "auto"
+/**
+ * Formatiert eine Zeitdauer in verschiedene Ausgabeformate (z. B. "HH:MM:SS" oder "DDd HH:MM:SS").
+ *
+ * @param {number} ms - Dauer in Millisekunden.
+ * @param {string} [mode='hms'] - Formatmodus ("hms" oder "auto").
+ * @returns {string} Formatierte Dauer als Text.
+ */
 function formatDuration(ms: number, mode: string = 'hms'): string {
     const { days, hours, minutes, seconds, totalHours } = breakdown(ms);
     if (mode === 'auto') {
@@ -41,7 +68,18 @@ function formatDuration(ms: number, mode: string = 'hms'): string {
     return `${pad2(totalHours)}:${pad2(minutes)}:${pad2(seconds)}`;
 }
 
-// countdown.ts
+/**
+ * Initialisiert und steuert alle Countdown-Elemente auf der Seite.
+ *
+ * Liest die Konfiguration über data-Attribute aus und unterscheidet zwei Modi:
+ * - visit: Relativer Countdown ab Seitenbesuch mit Speicherung im localStorage.
+ * - deadline: Absoluter Countdown bis zu einem festen Zeitpunkt.
+ *
+ * @example
+ * <span data-countdown data-mode="visit" data-duration="PT20M"></span>
+ * @example
+ * <span data-countdown data-mode="deadline" data-end-at="2025-12-31T23:59:59Z"></span>
+ */
 export function countdown() {
     // Hilfsfunktion, um data-* Attribute auszulesen
     function getData(el: HTMLElement, name: string) {
