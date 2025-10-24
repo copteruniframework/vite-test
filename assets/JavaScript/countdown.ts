@@ -1,3 +1,26 @@
+function pad2(n: number): string { return String(n).padStart(2, '0'); }
+function breakdown(ms: number) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const seconds = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const minutes = totalMinutes % 60;
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+  return { days, hours, minutes, seconds, totalHours };
+}
+
+// Schritt 1: Einfaches Format "hms" und "auto"
+function formatDuration(ms: number, mode: string = 'hms'): string {
+  const { days, hours, minutes, seconds, totalHours } = breakdown(ms);
+  if (mode === 'auto') {
+    if (days > 0) return `${days}d ${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
+    return `${pad2(totalHours)}:${pad2(minutes)}:${pad2(seconds)}`;
+  }
+  // Default: hms (Gesamtstunden)
+  return `${pad2(totalHours)}:${pad2(minutes)}:${pad2(seconds)}`;
+}
+
 // countdown.ts
 export function countdown() {
     // Hilfsfunktion, um data-* Attribute auszulesen
@@ -15,6 +38,7 @@ export function countdown() {
 
         if (mode === 'visit') {
             const durationStr = getData(el, 'duration');
+            const format = getData(el, 'format') || 'hms';
             if (!durationStr) return;
 
             const durationMs = parseISODuration(durationStr);
@@ -31,12 +55,13 @@ export function countdown() {
                 const remaining = endAt - now;
                 if (remaining <= 0) {
                     if (timeout) clearTimeout(timeout);
-                    el.textContent = '0:00';
+                    el.textContent = formatDuration(0, format);
                     localStorage.removeItem(storageKey);
                     return;
                 }
                 const seconds = Math.ceil(remaining / 1000);
-                el.textContent = `${seconds}s`;
+                const formatted = formatDuration(remaining + 999, format);
+                el.textContent = formatted;
 
                 const nextDelay = remaining - (seconds - 1) * 1000;
                 const delay = Math.max(50, Math.min(1000, nextDelay));
