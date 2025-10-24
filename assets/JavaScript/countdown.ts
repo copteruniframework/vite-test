@@ -78,8 +78,44 @@ export function countdown() {
             };
             document.addEventListener('visibilitychange', onVis);
         } else if (mode === 'deadline') {
-            const endAt = getData(el, 'end-at');
-            console.log(`countdown[${idx}] id=${id} mode=deadline endAt=${endAt}`);
+          const endAtStr = getData(el, 'end-at');
+          const format = getData(el, 'format') || 'hms';
+          if (!endAtStr) {
+            console.warn(`countdown[${idx}] id=${id} fehlendes data-end-at`);
+            return;
+          }
+          const endAt = Date.parse(endAtStr);
+          if (Number.isNaN(endAt)) {
+            console.warn(`countdown[${idx}] id=${id} ungültiges data-end-at=${endAtStr}`);
+            el.setAttribute('data-error', 'invalid-endAt');
+            return;
+          }
+
+          let timeout: number | undefined;
+
+          function render(nowMs: number) {
+            const remaining = endAt - nowMs;
+            if (remaining <= 0) {
+              if (timeout) clearTimeout(timeout);
+              el.textContent = formatDuration(0, format);
+              return;
+            }
+            const seconds = Math.ceil(remaining / 1000);
+            el.textContent = formatDuration(remaining + 999, format);
+            const nextDelay = remaining - (seconds - 1) * 1000;
+            const delay = Math.max(50, Math.min(1000, nextDelay));
+            timeout = window.setTimeout(() => render(Date.now()), delay);
+          }
+
+          render(Date.now());
+          
+          const onVis = () => {
+            if (!document.hidden) {
+              if (timeout) clearTimeout(timeout);
+              render(Date.now());
+            }
+          };
+          document.addEventListener('visibilitychange', onVis);
         } else {
             console.warn(`countdown[${idx}] id=${id} unbekannter mode=${mode}`);
         }
